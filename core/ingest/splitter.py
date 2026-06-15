@@ -15,10 +15,13 @@ from langchain_text_splitters import (
 
 
 # ── 默认标题层级映射 ──────────────────────────────────────
+# 注意：不要用 "category" 作为 key，避免覆盖文件路径推断的分类标签。
+# 分类标签（教师/美食/校园）由 markdown_loader.py 从文件路径推断，
+# 然后在 splitter._infer_category() 中重新赋值。
 DEFAULT_HEADERS = [
-    ("#", "category"),      # 大类：学院 / 食堂名称
-    ("##", "sub_category"), # 小类：具体教师 / 具体窗口
-    ("###", "detail"),      # 详情：课程 / 推荐菜
+    ("#", "chapter"),       # 章节名：学院 / 食堂名称
+    ("##", "section"),      # 节名：具体教师 / 具体窗口
+    ("###", "subsection"),  # 小节：详情 / 推荐菜
 ]
 
 

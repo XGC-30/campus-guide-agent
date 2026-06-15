@@ -61,16 +61,25 @@ class QwenDashScope(LLMProvider):
     def generate(self, query: str, context: str, **kwargs) -> str:
         from langchain_core.messages import HumanMessage, SystemMessage
 
-        messages = []
-        if self.system_prompt:
-            messages.append(SystemMessage(content=self.system_prompt))
+        # 优先级：调用时传入的 system_prompt > 构造时设置的 system_prompt > 默认 prompt
+        system_prompt = kwargs.get("system_prompt", self.system_prompt)
 
-        prompt = (
-            f"使用以下校园知识来回答问题：\n\n"
-            f"{context}\n\n"
-            f"用户问题：{query}"
-        )
-        messages.append(HumanMessage(content=prompt))
+        if system_prompt:
+            # 完全使用传入的完整提示词模板（含角色设定、检索上下文、工具结果）
+            final_prompt = system_prompt.format(
+                context=context or "（知识库暂无相关内容）",
+                tool_result=kwargs.get("tool_result", "") or "（无工具辅助信息）",
+                query=query,
+            )
+            messages = [HumanMessage(content=final_prompt)]
+        else:
+            # 保底：用简易 prompt
+            prompt = (
+                f"使用以下校园知识来回答问题，不要编造信息。\n\n"
+                f"校园知识：\n{context}\n\n"
+                f"用户问题：{query}"
+            )
+            messages = [HumanMessage(content=prompt)]
 
         response = self.llm.invoke(messages)
         return response.content
