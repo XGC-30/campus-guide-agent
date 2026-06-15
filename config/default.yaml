@@ -1,0 +1,98 @@
+# ============================================================
+# Campus Guide Agent — 默认配置
+# 每个大学可通过 config/universities/<name>.yaml 覆盖这些值
+# ============================================================
+
+university:
+  name: "默认大学"
+  short_name: "default"
+
+# ---------- 数据源 ----------
+data_sources:
+  - type: markdown
+    path: "data/"
+    enabled: true
+
+# ---------- 模型配置 ----------
+models:
+  # 嵌入模型（用于向量化检索）
+  embedding:
+    model_name: "BAAI/bge-large-zh-v1.5"
+    device: "cpu"                          # cpu | cuda
+    normalize: true
+    batch_size: 32
+
+  # 重排模型（检索后精排）
+  reranker:
+    model_name: "BAAI/bge-reranker-v2-m3"
+    device: "cpu"
+    top_k: 3                                # 重排后保留几个
+
+  # 大语言模型
+  llm:
+    mode: "local"                           # local (ollama) | api (dashscope)
+    ollama:
+      model: "qwen2.5:7b"
+      base_url: "http://localhost:11434"
+      temperature: 0.3
+      num_predict: 2048
+    dashscope:
+      model: "qwen-plus"                    # qwen-turbo | qwen-plus | qwen-max
+      temperature: 0.3
+      max_tokens: 2048
+
+# ---------- 文档切分配置 ----------
+chunking:
+  default:
+    chunk_size: 500
+    chunk_overlap: 80
+  # 按内容类型覆盖
+  overrides:
+    教师:
+      chunk_size: 300
+      chunk_overlap: 50
+    美食:
+      chunk_size: 400
+      chunk_overlap: 60
+    课程:
+      chunk_size: 1000
+      chunk_overlap: 200
+    校园:
+      chunk_size: 500
+      chunk_overlap: 80
+
+# ---------- 检索配置 ----------
+retrieval:
+  initial_k: 10                            # 初步检索取几个
+  final_k: 3                               # 重排后保留几个给 LLM
+  search_type: "similarity"                # similarity | mmr
+  similarity_threshold: 0.5                # 低于此分数的结果丢弃
+
+# ---------- 向量数据库 ----------
+vectorstore:
+  type: "chroma"
+  persist_dir: "./chroma_db"
+  collection_name: "campus_knowledge"
+  distance_metric: "cosine"
+
+# ---------- 工具配置 ----------
+tools:
+  route_planner:
+    enabled: false
+    provider: "amap"                       # amap | baidumap
+    api_key: "${AMAP_API_KEY}"
+
+# ---------- 校园 POI（兴趣点）----------
+# 用于路线规划工具，各大学自定义填充
+pois: {}
+# 示例:
+#   计算机楼: {lat: 30.123, lng: 120.456}
+#   第一食堂: {lat: 30.124, lng: 120.457}
+#   图书馆:   {lat: 30.125, lng: 120.458}
+
+# ---------- 意图识别关键词 ----------
+intent_keywords:
+  教师: ["老师", "教授", "导师", "教师", "课程", "上课", "办公室", "研究方向", "论文", "科研", "导师", "课题组"]
+  美食: ["吃", "食堂", "饭", "美食", "餐厅", "推荐", "好吃", "早餐", "午餐", "晚餐", "外卖", "奶茶", "咖啡", "窗口", "小吃", "麻辣", "面"]
+  路线: ["怎么去", "怎么走", "路线", "导航", "在哪里", "怎么到", "位置", "在哪", "多远", "附近"]
+  校园: ["图书馆", "教学楼", "宿舍", "操场", "体育馆", "报到", "新生", "校历", "选课", "社团", "学费"]

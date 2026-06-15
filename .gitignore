@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# 向量数据库（本地数据不入库）
+chroma_db/
+*.chroma/
+
+# 模型文件（太大）
+models/
+*.bin
+*.safetensors
+*.pth
+
+# 环境变量
+.env
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 数据（示例除外）
+data/*
+!data/.gitkeep
+!data/demo_university/
+
+# 日志
+logs/
+*.log
+
+# Streamlit
+.streamlit/secrets.toml

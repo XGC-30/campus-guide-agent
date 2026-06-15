@@ -1,0 +1,49 @@
+# ============================================================
+# 演示大学配置（开箱即用的示例）
+# 复制此文件创建你自己的大学配置
+# ============================================================
+
+university:
+  name: "演示大学"
+  short_name: "demo"
+
+data_sources:
+  - type: markdown
+    path: "data/demo_university/"
+    enabled: true
+
+models:
+  embedding:
+    model_name: "BAAI/bge-large-zh-v1.5"
+    device: "cpu"
+    normalize: true
+  reranker:
+    model_name: "BAAI/bge-reranker-v2-m3"
+    device: "cpu"
+    top_k: 3
+  llm:
+    mode: "local"
+    ollama:
+      model: "qwen2.5:7b"
+      base_url: "http://localhost:11434"
+      temperature: 0.3
+      num_predict: 2048
+
+tools:
+  route_planner:
+    enabled: true
+    provider: "amap"
+    api_key: "${AMAP_API_KEY}"
+
+pois:
+  计算机楼: {lat: 30.5123, lng: 114.4123}
+  第一食堂: {lat: 30.5128, lng: 114.4115}
+  第二食堂: {lat: 30.5135, lng: 114.4108}
+  图书馆:   {lat: 30.5119, lng: 114.4130}
+  行政楼:   {lat: 30.5110, lng: 114.4140}
+  体育馆:   {lat: 30.5140, lng: 114.4120}
+  宿舍区:   {lat: 30.5138, lng: 114.4100}
+  校医院:   {lat: 30.5105, lng: 114.4135}
+  学生活动中心: {lat: 30.5125, lng: 114.4110}
+  东门:     {lat: 30.5115, lng: 114.4155}
+  西门:     {lat: 30.5130, lng: 114.4090}
