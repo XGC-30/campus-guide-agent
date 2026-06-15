@@ -40,6 +40,9 @@ Thumbs.db
 data/*
 !data/.gitkeep
 !data/demo_university/
+!data/demo_university/**
+!data/hnie/
+!data/hnie/**
 
 # 日志
 logs/

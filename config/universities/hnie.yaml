@@ -1,0 +1,53 @@
+# ============================================================
+# 湖南工程学院 配置
+# ============================================================
+
+university:
+  name: "湖南工程学院"
+  short_name: "hnie"
+
+data_sources:
+  - type: markdown
+    path: "data/hnie/"
+    enabled: true
+
+models:
+  embedding:
+    model_name: "BAAI/bge-large-zh-v1.5"
+    device: "cpu"
+  reranker:
+    model_name: "BAAI/bge-reranker-v2-m3"
+    device: "cpu"
+    top_k: 3
+  llm:
+    mode: "local"
+    ollama:
+      model: "qwen2.5:7b"
+      base_url: "http://localhost:11434"
+      temperature: 0.3
+      num_predict: 2048
+
+tools:
+  route_planner:
+    enabled: false
+
+pois:
+  主校区: {lat: 27.860, lng: 112.950}
+  书院路校区: {lat: 27.830, lng: 112.920}
+  体育馆: {lat: 27.858, lng: 112.948}
+  木鱼湖: {lat: 27.862, lng: 112.945}
+
+chunking:
+  default:
+    chunk_size: 500
+    chunk_overlap: 80
+  overrides:
+    教师:
+      chunk_size: 400
+      chunk_overlap: 60
+    美食:
+      chunk_size: 400
+      chunk_overlap: 60
+    校园:
+      chunk_size: 500
+      chunk_overlap: 80
