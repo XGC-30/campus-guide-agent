@@ -124,6 +124,18 @@ class CampusRAGPipeline:
                 num_predict=ollama_cfg.get("num_predict", 2048),
             )
 
+    def retrieve(self, query: str):
+        """
+        公开检索步骤 — 供 UI 层获取中间结果以展示来源
+
+        Returns:
+            经过意图路由 + 重排后的 Document 列表
+        """
+        docs = self.retriever.retrieve(query, k=10)
+        if self.reranker and docs:
+            docs = self.reranker.rerank(query, docs, top_k=self.final_k)
+        return docs
+
     def invoke(self, query: str) -> str:
         """
         执行完整的 RAG 流程（同步）

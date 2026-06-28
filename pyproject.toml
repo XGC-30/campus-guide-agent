@@ -45,7 +45,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-webui = ["streamlit>=1.35.0"]
+webui = ["chainlit>=2.0.0"]
 dev = ["pytest>=8.0.0", "pytest-cov>=5.0.0", "black>=24.0.0", "ruff>=0.5.0"]
 
 [project.scripts]

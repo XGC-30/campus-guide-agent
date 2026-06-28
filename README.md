@@ -53,14 +53,51 @@ python scripts/download_models.py
 # 初始化知识库（将 Markdown 文件向量化入库）
 python scripts/init_db.py
 
-# 启动 Web 界面
-streamlit run app/webui.py
+# 启动 Web 界面（Chainlit）
+chainlit run app/chainlit_app.py
 
 # 或使用命令行
 python -m app.cli
 ```
 
-然后在浏览器打开 http://localhost:8501，开始和「小园」对话！
+然后在浏览器打开 http://localhost:8000，开始和「小园」对话！
+
+## 🏗️ 系统架构
+
+```
+用户问题
+    ↓
+┌─ 复杂度路由器 ───────────────────────────┐
+│  _detect_intents(query)                  │
+│  单意图 → ⚡ fast path / 多意图 → 🐢 slow │
+└──────────────────────────────────────────┘
+         │                          │
+         ▼                          ▼
+┌─ FAST PATH ───────────┐  ┌─ SLOW PATH ────────────────┐
+│ 单类向量检索 (BGE)    │  │ 多类交叉检索 (各取 top-5)  │
+│ → Rerank (top-3)     │  │ → Rerank (top-5)            │
+│ → 生成回答           │  │ → 工具调用                  │
+│ ~200ms               │  │ → 综合生成回答              │
+└───────────────────────┘  └─────────────────────────────┘
+         ↓                          ↓
+┌─ 可观测性 ────────────────────────────────────┐
+│  stdout log: route / intents / latency / docs │
+└───────────────────────────────────────────────┘
+```
+
+| 模块 | 状态 | 说明 |
+|---|---|---|
+| 复杂度自适应路由 | ✅ | 关键词匹配，单/多意图分流 |
+| 向量检索 (BGE-large-zh-v1.5) | ✅ | 中文语义检索 SOTA |
+| BGE Re-Ranker 精排 | ✅ | Cross-Encoder 重排，10→3 |
+| LLM 生成 (Qwen 2.5) | ✅ | Ollama 本地 / DashScope API |
+| 来源引用 | ✅ | Chainlit 原生引用组件 |
+| 流式输出 | ✅ | Chainlit 逐字流式 |
+| 工具调用 (高德路线规划) | ⚠️ | 关键词触发 → 计划改为 LLM function calling |
+| Hybrid Search (向量+BM25) | 📋 | BGE 中文够用，有需求再加 |
+| Agent Loop (ReAct) | 📋 | 95% 场景单跳，复杂场景升级时开启 |
+| 输入/输出 Guardrail | 📋 | demo 阶段无暴露面，上线前加 |
+| 评测体系 | 📋 | 计划：20 条用例 + 关键词命中率 + 延迟 |
 
 ---
 

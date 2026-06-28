@@ -20,7 +20,7 @@ transformers>=4.45.0
 torch>=2.4.0
 
 # ========== Web UI ==========
-streamlit>=1.35.0
+chainlit>=2.0.0
 
 # ========== 工具库 ==========
 python-dotenv>=1.0.0
